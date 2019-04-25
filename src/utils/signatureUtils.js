@@ -6,13 +6,14 @@
 * 4. 检查时间戳有没有过期
 * 5. 默认为Get请求，请使用get请求。使用encodeSignature作为Signature参数
 * 6. 排序的时候大小写敏感了。使用原生的排序即可 
-* @param {*} url 
+* @param {*} adr 
 * @param {*} key 
 * @param {*} result 
 */
+var url = require('url');
 var crypto = require('crypto');
 class signatureUtils { 
-    static parseUrl(url, key, resultArr) {
+    static parseUrl(adr, key) {
         var addressConfig = {
             "RecordCreate": "cns.api.qcloud.com",//添加解析记录
             "RecordStatus": "cns.api.qcloud.com",//设置解析记录状态
@@ -21,10 +22,10 @@ class signatureUtils {
             "RecordDelete": "cns.api.qcloud.com",//删除解析记录
             "DescribeInstances": "cvm.api.qcloud.com"//查看实例列表
         };
-        function _parser(url) {
+        function _parser(adr) {
             var result = {};
-            var parser = document.createElement('a');
-            parser.href = result.href = url;
+            var parser = url.parse(adr, true);
+            parser.href = result.href = adr;
             try {
                 if (parser.search) {
                     var param = parser.search.slice(1, parser.search.length);
@@ -49,9 +50,10 @@ class signatureUtils {
                             /*3. 拼接签名原文字符串 请求方法 + 请求主机 +请求路径 + ? + 请求字符串*/
                             parser.joinAllGet = result.joinAllGet = "GET" + (addressConfig[parser.param.Action]) + "/v2/index.php?" + parser.paramJoin;
                             /*4. 生成签名串*/
-                            var hash = crypto.createHmac(parser.joinAllGet, key);
-                            var buff = new Buffer(hash);  
-                            var hashInBase64 = buff.toString('base64');
+                            var hashInBase64 = crypto.createHmac('sha256', Buffer.from(key, 'utf8'))
+                                .update(parser.joinAllGet)
+                                .digest()
+                                .toString('base64');
                             parser.Signature = result.Signature = hashInBase64;
                             parser.encodeSignature = result.encodeSignature = encodeURIComponent(hashInBase64);
                         }
@@ -63,8 +65,8 @@ class signatureUtils {
             }
             return result;
         }
-        var _result = _parser(url);
-        resultArr.push(_result);
-        console.log(resultArr);
+        var _result = _parser(adr);
+        return _result;
     }
 }
+module.exports = signatureUtils;

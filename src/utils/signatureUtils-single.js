@@ -6,6 +6,9 @@
 * 4. 检查时间戳有没有过期
 * 5. 默认为Get请求，请使用get请求。使用encodeSignature作为Signature参数
 * 6. 排序的时候大小写敏感了。使用原生的排序即可
+* 7. 官网例子：parseUrl("https://cns.api.qcloud.com/v2/index.php?Action=DescribeInstances&InstanceIds.0=ins-09dx96dg&Nonce=11886&Region=ap-guangzhou&SecretId=AKIDz8krbsJ5yKBZQpn74WFkmLPx3gnPhESA&SignatureMethod=HmacSHA256&Timestamp=1465185768","Gu5t9xGARNpq86cd98joQYCN3Cozk1qA",[]);、
+    返回：0EEm/HtGRr/VJXTAD9tYMth1Bzm3lLHz5RCDv1GdM8s=
+    编码：0EEm%2FHtGRr%2FVJXTAD9tYMth1Bzm3lLHz5RCDv1GdM8s%3D
 * @param {*} url 
 * @param {*} key 
 * @param {*} result 
