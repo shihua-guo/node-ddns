@@ -1,9 +1,9 @@
 {
     "mysql":{
-        "host"     : "111.230.165.16",
-        "user"     : "root",
-        "password" : "alan@MYSQL!@#",
-        "database" : "test"
+        "host"     : "localhost",
+        "user"     : "mysql",
+        "password" : "mysql",
+        "database" : "mysql"
     },
     "token":{
         "keyTable":"tencent_config"
