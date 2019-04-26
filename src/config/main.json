@@ -1,8 +1,8 @@
 {
     "mysql":{
-        "host"     : "111.230.165.16",
-        "user"     : "root",
-        "password" : "alan@MYSQL!@#",
+        "host" : "localhost",
+        "user" : "test",
+        "password" : "mysql",
         "database" : "test"
     },
     "token":{
