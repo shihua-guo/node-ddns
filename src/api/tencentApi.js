@@ -33,6 +33,9 @@ class TencentApi {
             });
         });
     }
+    /**
+     * 获取解析列表数据
+     */
     static getRecordList(){
         var SecretId = Utils.token.SecretId;
         var SecretKey = Utils.token.SecretKey;

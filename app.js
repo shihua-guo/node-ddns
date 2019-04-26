@@ -58,6 +58,7 @@ app.get("/initCache",function(req,resp){
 		resp.send('初始化缓存成功');
 	} catch (error) {
 		console.log(error);
+		resp.send('初始化缓存失败');
 	}
 });
 
