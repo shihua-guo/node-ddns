@@ -1,12 +1,29 @@
 var mysql = require("mysql");
 var fs = require("fs");
+const SignatureUtils = require("../utils/signatureUtils");
 class Utils {
-    static extractIpFromString (str){//因为接收到可能是ipv6地址，所以我们需要提取ipv4地址
+    static fillSignatureByParams(params,SecretKey){
+        var url = Utils.getUrlByAction(Action);
+        var Action = params.Action;
+        var paramsStr = Utils.transParamsToStr(params);
+        var parseResult = SignatureUtils.parseUrl(url+"?"+paramsStr,SecretKey);
+        params.Signature = parseResult.Signature;
+        return params;
+    }
+    /**
+     * 解析请求的ip。因为接收到可能是ipv6地址，所以我们需要提取ipv4地址
+     * @param {请求的ip参数} str 
+     */
+    static extractIpFromString (str){
         var r = /\b\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}\b/;
         var ip = str.match(r);
         return ip[0];
     }
-    static initToken(connection){//回调直接放入内存中
+    /**
+     * 初始化用户和token的缓存
+     * @param {mysql连接} connection 
+     */
+    static initToken(connection){
         /* 查询token */
         connection.query("SELECT * FROM "+Utils.config.token.keyTable,function(error,results,fields){
             if (error) throw error;
@@ -26,6 +43,10 @@ class Utils {
             }
         });
     }
+    /**
+     * 获取mysql连接
+     * @param {回调函数} callBack 
+     */
     static getMysqlConnection(callBack){
         if(!Utils.connection){
             Utils.connection = mysql.createConnection(Utils.config.mysql);
@@ -36,29 +57,42 @@ class Utils {
     }
     /**
      * 
-     * @param {操作名称} Action 
      * @param {数据库获取的id} SecretId 
      * @param {独立参数} uniqueParams 
      */
-    static getApiParams(Action,SecretId,uniqueParams){
+    static getApiParams(SecretId,uniqueParams){
         var params = Object.assign({}, Utils.config.apiCommon);
-        params.Action = Action;
         params.SecretId = Utils.token.SecretId;
         params.Timestamp =  Math.round(+new Date()/1000);
         params.Nonce = Math.floor(Math.random() * 100000000);
         Object.assign(params,uniqueParams );
         return params;
     }
-    static transParamsToStr(params){
+    /**
+     * 将params对象转化为字符串
+     * @param {get请求查询参数} params 
+     * @param {是否进行url编码} ifEncode 
+     */
+    static transParamsToStr(params,ifEncode){
         var paramArr = Object.keys(params).map(function(key){
-            return key+"="+params[key];
+            return key+"="+(ifEncode?encodeURIComponent(params[key]):params[key]);
         });
         return paramArr.join("&");
     }
+    /**
+     * 获取请求的参数
+     * @param {请求的操作} Action 
+     * @param {你的SecretId} SecretId 
+     * @param {该操作自己的参数} uniqueParams 
+     */
     static getApiParamsStr(Action,SecretId,uniqueParams){
         var params = this.getApiParams(Action,SecretId,uniqueParams);
         return this.transParamsToStr(params);
     }
+    /**
+     * 拼接完整的请求地址
+     * @param {请求的操作} Action 
+     */
     static getUrlByAction(Action){
         return "https://"+Utils.config.addressConfig[Action] + Utils.config.apiUrl;
     }

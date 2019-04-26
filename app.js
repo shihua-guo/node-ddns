@@ -23,8 +23,28 @@ app.get('/modify',function(req,resp){
 		if(domain){
 			resp.send('验证成功');
 			//获取域名解析列表
-			TencentApi.getRecordList(function(resp){
-				console.log(resp);
+			TencentApi.getRecordList().then(bodyStr=>{
+				//bodyStr = bodyStr.replace('"',"'").slice(0, -1) +"'";
+				let body = JSON.parse(bodyStr);
+				let domainData = body.data;
+				console.log(domainData);
+				//校验是否存在3级域名
+				var nowRecord = domainData.records.filter(record => {
+					return record.name === domain;
+				});
+				if(nowRecord.length){//存在，那么则发起修改解析的请求。
+					TencentApi.RecordModify("RecordModify",nowRecord[0].id,domain,ip).then(bodyStr=>{
+						let body = JSON.parse(bodyStr);
+						let respData = body.data;
+						console.log(body);
+					});
+				}else{//不存在，则添加解析
+					TencentApi.RecordModify("RecordCreate",nowRecord[0].id,domain,ip).then(bodyStr=>{
+						let body = JSON.parse(bodyStr);
+						let respData = body.data;
+						console.log(body);
+					});
+				}
 			});
 		}else{
 			resp.send('验证失败');
