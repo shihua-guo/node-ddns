@@ -15,12 +15,12 @@ class TencentApi {
         var params = Utils.getApiParams(SecretId,{
             Action:Action,
             domain:Utils.token.domain,
-            recordId:recordId,
             subDomain:subDomain,
             recordType: "A",
             recordLine: "默认",
             value:ip
         });
+        !recordId||(params.recordId = recordId);//如果是修改域名，需要将原id传入
         var url = Utils.getUrlByAction(Action);
         Utils.fillSignatureByParams(params,SecretKey);
         var finalUrl = url+"?"+Utils.transParamsToStr(params,true);

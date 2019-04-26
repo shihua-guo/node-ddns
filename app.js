@@ -21,7 +21,6 @@ app.get('/modify',function(req,resp){
 	if(_t){
 		var domain = Utils.ddnsUsersMap[_t];
 		if(domain){
-			resp.send('验证成功');
 			//获取域名解析列表
 			TencentApi.getRecordList().then(bodyStr=>{
 				//bodyStr = bodyStr.replace('"',"'").slice(0, -1) +"'";
@@ -37,18 +36,28 @@ app.get('/modify',function(req,resp){
 						let body = JSON.parse(bodyStr);
 						let respData = body.data;
 						console.log(body);
+						resp.send(body);
 					});
 				}else{//不存在，则添加解析
-					TencentApi.RecordModify("RecordCreate",nowRecord[0].id,domain,ip).then(bodyStr=>{
+					TencentApi.RecordModify("RecordCreate",null,domain,ip).then(bodyStr=>{
 						let body = JSON.parse(bodyStr);
 						let respData = body.data;
 						console.log(body);
+						resp.send(body);
 					});
 				}
 			});
 		}else{
 			resp.send('验证失败');
 		}
+	}
+});
+app.get("/initCache",function(req,resp){
+	try {
+		Utils.initToken(Utils.getMysqlConnection());
+		resp.send('初始化缓存成功');
+	} catch (error) {
+		console.log(error);
 	}
 });
 
