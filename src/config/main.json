@@ -1,0 +1,23 @@
+{
+    "mysql":{
+        "host"     : "111.230.165.16",
+        "user"     : "root",
+        "password" : "alan@MYSQL!@#",
+        "database" : "test"
+    },
+    "token":{
+        "keyTable":"tencent_config"
+    },
+    "apiCommon":{
+        "SignatureMethod":"HmacSHA256"
+    },
+    "addressConfig": {
+        "RecordCreate": "cns.api.qcloud.com",
+        "RecordStatus": "cns.api.qcloud.com",
+        "RecordModify": "cns.api.qcloud.com",
+        "RecordList": "cns.api.qcloud.com",
+        "RecordDelete": "cns.api.qcloud.com",
+        "DescribeInstances": "cvm.api.qcloud.com"
+    },
+    "apiUrl":"/v2/index.php"
+}

@@ -12,7 +12,7 @@
 */
 var url = require('url');
 var crypto = require('crypto');
-class signatureUtils { 
+class SignatureUtils { 
     static parseUrl(adr, key) {
         var addressConfig = {
             "RecordCreate": "cns.api.qcloud.com",//添加解析记录
@@ -69,4 +69,4 @@ class signatureUtils {
         return _result;
     }
 }
-module.exports = signatureUtils;
+module.exports = SignatureUtils;

@@ -1,8 +1,10 @@
 const Utils = require("./src/utils/utils");
-const signatureUtils = require("./src/utils/signatureUtils");
 var express = require('express');
+var bodyParser = require('body-parser');
 var app = express();
-var connection = Utils.getMysqlConnection();
+const TencentApi = require("./src/api/tencentApi");
+const SignatureUtils = require("./src/utils/signatureUtils");
+var connection = Utils.getMysqlConnection(Utils.initToken);
 connection.connect(function(err){
 	if(err){
 		console.log(err);
@@ -10,32 +12,39 @@ connection.connect(function(err){
 	}else{
 	}
 });
-var signatur = signatureUtils.parseUrl("https://cns.api.qcloud.com/v2/index.php?Action=DescribeInstances&InstanceIds.0=ins-09dx96dg&Nonce=11886&Region=ap-guangzhou&SecretId=AKIDz8krbsJ5yKBZQpn74WFkmLPx3gnPhESA&SignatureMethod=HmacSHA256&Timestamp=1465185768","Gu5t9xGARNpq86cd98joQYCN3Cozk1qA");
-console.log(signatur);
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({extended: false}));
 app.get('/modify',function(req,resp){
 	var ip = Utils.extractIpFromString(req.ip);
 	var _t = req.query._t;
 	console.log("将ip替换为：",ip);
 	if(_t){
-		var sql = "SELECT * from ddns_user where token = '"+_t+"'";
-		console.log("查询的sql",sql);
-		connection.query(sql, function (error, results, fields) {
-			if (error) throw error;
-			console.log('The results is: ', results);
-			console.log('The fields is: ', fields);
-			if(results.length ){
-				resp.send('验证成功');
-				connection.query("SELECT * from ddns_user where token = '"+_t+"'", function (error, results, fields) {
-					if(results.length){
-						console.log(results);
-					}
-				});
-			}else{
-				resp.send('验证失败');
-			}
-		  });
+		var domain = Utils.ddnsUsersMap[_t];
+		if(domain){
+			resp.send('验证成功');
+			//获取域名解析列表
+			TencentApi.getRecordList(function(resp){
+				console.log(resp);
+			});
+		}else{
+			resp.send('验证失败');
+		}
 	}
+});
 
+app.post("/testSignature",function(req,resp){
+	var body = req.body;
+	if(body && body.url && body.key){
+		try {
+			var result = SignatureUtils.parseUrl(body.url,body.key);
+			console.log(result);
+			resp.send(result);
+		} catch (error) {
+			resp.send("解析出错");
+		}
+	}else{
+		resp.send("请在body填写对应的URL和key。如{url:xxx,key:xxx}");
+	}
 });
 app.listen(3000);
 console.log("app is running on 3000");

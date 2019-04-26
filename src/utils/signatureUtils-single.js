@@ -9,9 +9,21 @@
 * 7. 官网例子：parseUrl("https://cns.api.qcloud.com/v2/index.php?Action=DescribeInstances&InstanceIds.0=ins-09dx96dg&Nonce=11886&Region=ap-guangzhou&SecretId=AKIDz8krbsJ5yKBZQpn74WFkmLPx3gnPhESA&SignatureMethod=HmacSHA256&Timestamp=1465185768","Gu5t9xGARNpq86cd98joQYCN3Cozk1qA",[]);、
     返回：0EEm/HtGRr/VJXTAD9tYMth1Bzm3lLHz5RCDv1GdM8s=
     编码：0EEm%2FHtGRr%2FVJXTAD9tYMth1Bzm3lLHz5RCDv1GdM8s%3D
-* @param {*} url 
-* @param {*} key 
-* @param {*} result 
+* @param {*} url 除了Signature参数以外的get请求字符串。如：https://cns.api.qcloud.com/v2/index.php?Action=DescribeInstances&InstanceIds.0=ins-09dx96dg&Nonce=11886&Region=ap-guangzhou&SecretId=AKIDz8krbsJ5yKBZQpn74WFkmLPx3gnPhESA&SignatureMethod=HmacSHA256&Timestamp=1465185768
+* @param {*} key 你的SecretId
+* @param {*} result 传入一个数组。因为这里只有一个方法，需要请求加密的js，是异步的，不能将结果直接返回给你。通过数组将结果传递出去
+* @returns 返回一个对象：
+    {
+        encodeSignature --编码后的签名（你需要的是这个）
+        Signature --计算的签名
+        href --你传递的地址
+        param --解析出来的查询参数
+        paramKeys --解析出来的查询参数的key
+        paramSort --参数的排序（原生的js排序）
+        paramJoins --参数的字符串
+        paramJoin --
+        joinAllGet --排序后的拼接请求字符串
+    }
 */
 function parseUrl(url, key, resultArr) {
     var addressConfig = {
